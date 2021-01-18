@@ -5,8 +5,10 @@ import pandas as pd
 import numpy as np
 import torch
 import cv2
+import torch
 from torch.utils.data import DataLoader, Dataset
 from torchvision import transforms
+
 
 def get_dataloader(
     csv_file: str,
@@ -30,9 +32,23 @@ def get_dataloader(
         num_workers=num_workers,
         pin_memory=pin_memory,
         drop_last=drop_last,
+        collate_fn=od_collate_fn,
     )
 
     return dataloader
+
+
+def od_collate_fn(batch):
+    targets = []
+    imgs = []
+
+    for sample in batch:
+        imgs.append(sample[0])
+        targets.append(torch.FloatTensor(sampel[1]))
+    
+    imgs = torch.stack(imgs, dim=0)
+
+    return imgs, targets
 
 
 class VOCDataset(Dataset):
@@ -74,7 +90,8 @@ class VOCDataset(Dataset):
         gt = np.hstack((boxes, np.expand_dims(labels, axis=1)))
         return img, gt, w, h
 
-def test():
+
+def data_test():
     print(sys.path)
     from preprocessing import Anno_xml2list
     from transformer import DataTransform
@@ -97,6 +114,21 @@ def test():
 
     print(val_dataset.__getitem__(1))
 
+    train_dataloader = get_dataloader(
+        csv_file: str,
+        batch_size: int,
+        shuffle: bool,
+        num_workers: int,
+        pin_memory: bool,
+    )
+
+    batch_iterator = iter(train_dataloder)
+    imgs, targets = next(batch_iterator)
+
+    print(imgs.size())
+    print(len(targets))
+    print(targets[1].size())
+
 
 if __name__ == "__main__":
-    test()
+    data_test()
