@@ -12,17 +12,21 @@ from torchvision import transforms
 
 def get_dataloader(
     csv_file: str,
+    phase: str,
     batch_size: int,
     shuffle: bool,
     num_workers: int,
     pin_memory: bool,
     drop_last: bool = False,
-    transform: Optional[transforms.Compose] = None
+    transform: Optional[transforms.Compose] = None,
+    transform_anno: Optional[transforms.Compose] = None,
 ) -> DataLoader:
 
     data = VOCDataset(
         csv_file,
-        transform=transform
+        phase,
+        transform=transform,
+        transform_anno=transform_anno,
     )
     
     dataloader = DataLoader(
@@ -44,7 +48,7 @@ def od_collate_fn(batch):
 
     for sample in batch:
         imgs.append(sample[0])
-        targets.append(torch.FloatTensor(sampel[1]))
+        targets.append(torch.FloatTensor(sample[1]))
     
     imgs = torch.stack(imgs, dim=0)
 
@@ -114,15 +118,31 @@ def data_test():
 
     print(val_dataset.__getitem__(1))
 
-    train_dataloader = get_dataloader(
-        csv_file: str,
-        batch_size: int,
-        shuffle: bool,
-        num_workers: int,
-        pin_memory: bool,
+    train_loader = get_dataloader(
+        csv_file=train_path,
+        phase="train",
+        batch_size=16,
+        shuffle=True,
+        num_workers=8,
+        pin_memory=True,
+        drop_last=True,
+        transform=DataTransform(input_size, color_mean),
+        transform_anno=Anno_xml2list(voc_classes),
     )
 
-    batch_iterator = iter(train_dataloder)
+    val_loader = get_dataloader(
+        csv_file=val_path,
+        phase="val",
+        batch_size=16,
+        shuffle=True,
+        num_workers=8,
+        pin_memory=True,
+        drop_last=True,
+        transform=DataTransform(input_size, color_mean),
+        transform_anno=Anno_xml2list(voc_classes),
+    )
+
+    batch_iterator = iter(train_loader)
     imgs, targets = next(batch_iterator)
 
     print(imgs.size())
