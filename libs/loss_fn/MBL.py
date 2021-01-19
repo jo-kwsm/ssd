@@ -6,7 +6,7 @@ from ..match import match
 
 
 class MultiBoxLoss(nn.Module):
-    def __init__(self, jaccard_thresh=0.5, neg_pos=3, device="cuda:0"):
+    def __init__(self, jaccard_thresh=0.5, neg_pos=3, device="cuda"):
         super(MultiBoxLoss, self).__init__()
         self.jaccard_thresh = jaccard_thresh
         self.neg_pos_ratio = neg_pos
