@@ -11,7 +11,7 @@ class Config:
     model: str
     pretrained: bool = True
 
-    size: int = 28
+    size: int = 300
 
     batch_size: int = 32
     num_workers: int = 8
