@@ -90,7 +90,7 @@ class L2Norm(nn.Module):
         x = torch.div(x, norm)
 
         weights = self.weight.unsqueeze(0).unsqueeze(2).unsqueeze(3)
-        out = weights * Anno_xml2list
+        out = weights * x
 
         return out
 

@@ -1,6 +1,6 @@
 import torch.nn as nn
 
-from libs.loss_fn.MBL import class MultiBoxLoss
+from libs.loss_fn.MBL import MultiBoxLoss
 
 __all__ = ["get_criterion"]
 

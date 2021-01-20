@@ -95,9 +95,6 @@ def main() -> None:
 
         dir_name = "_".join(param_list)
         dir_path = os.path.join(args.root_dir, dir_name)
-        print(args.root_dir)
-        print(dir_path)
-        print(os.path.exists(dir_path))
         if not os.path.exists(dir_path):
             print(dir_name)
             os.makedirs(dir_path)

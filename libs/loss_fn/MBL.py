@@ -17,7 +17,7 @@ class MultiBoxLoss(nn.Module):
 
         num_batch = loc_data.size(0)
         num_dbox = loc_data.size(1)
-        num_classes = loc_data.size(2)
+        num_classes = conf_data.size(2)
 
         conf_t_label = torch.LongTensor(num_batch, num_dbox).to(self.device)
         loc_t = torch.Tensor(num_batch, num_dbox, 4).to(self.device)
@@ -43,14 +43,14 @@ class MultiBoxLoss(nn.Module):
         pos_mask = conf_t_label > 0
         pos_idx = pos_mask.unsqueeze(pos_mask.dim()).expand_as(loc_data)
 
-        pos_idx_mask = pos_mask.unsqueeze(2).expand_as(conf_data)
-        neg_idx_mask = neg_mask.unsqueeze(2).expand_as(conf_data)
-
         loc_p = loc_data[pos_idx].view(-1, 4)
         loc_t = loc_t[pos_idx].view(-1, 4)
 
         loss_l = F.smooth_l1_loss(loc_p, loc_t, reduction="sum")
-        loss_c = F.crossentropy(batch_conf, conf_t_label.view(-1), reduction="none")
+
+        batch_conf = conf_data.view(-1, num_classes)
+
+        loss_c = F.cross_entropy(batch_conf, conf_t_label.view(-1), reduction="none")
         loss_c = loss_c.view(num_batch, -1)
         loss_c[pos_mask] = 0
 
@@ -61,10 +61,13 @@ class MultiBoxLoss(nn.Module):
         num_neg = torch.clamp(num_pos*self.neg_pos_ratio, max=num_dbox)
         neg_mask = idx_rank < num_neg.expand_as(idx_rank)
 
-        conf_hnm = conf_data[(pos_idx_mask+neg_idx_mask).gt(0)].view(-1, num_classes)
-        conf_t_label_hnm = conf_t_label[(pos_idx_mask+neg_idx_mask)].gt(0)
+        pos_idx_mask = pos_mask.unsqueeze(2).expand_as(conf_data)
+        neg_idx_mask = neg_mask.unsqueeze(2).expand_as(conf_data)
 
-        loss_c = F.crossentropy(conf_hnm, conf_t_label_hnm, reduction="sum")
+        conf_hnm = conf_data[(pos_idx_mask+neg_idx_mask).gt(0)].view(-1, num_classes)
+        conf_t_label_hnm = conf_t_label[(pos_mask+neg_mask).gt(0)]
+
+        loss_c = F.cross_entropy(conf_hnm, conf_t_label_hnm, reduction="sum")
 
         N = num_pos.sum()
         loss_l /= N

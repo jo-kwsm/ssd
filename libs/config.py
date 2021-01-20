@@ -13,7 +13,7 @@ class Config:
 
     size: int = 300
 
-    batch_size: int = 32
+    batch_size: int = 16
     num_workers: int = 8
     max_epoch: int = 100
 
