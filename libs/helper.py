@@ -48,6 +48,7 @@ def do_one_iteration(
     if iter_type == "train" and optimizer is not None:
         optimizer.zero_grad()
         loss.backward()
+        nn.utils.clip_grad_value_(model.parameters(), clip_value=2.0)
         optimizer.step()
 
     return batch_size, loss.item(), gt, pred
