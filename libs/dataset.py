@@ -3,7 +3,6 @@ from typing import Any, Optional
 
 import pandas as pd
 import numpy as np
-import torch
 import cv2
 import torch
 from torch.utils.data import DataLoader, Dataset
