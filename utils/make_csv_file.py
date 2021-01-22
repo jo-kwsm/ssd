@@ -1,6 +1,6 @@
 import argparse
 import glob, os, sys
-from typing import Dict
+from typing import Dict, List
 
 import pandas as pd
 
