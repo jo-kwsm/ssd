@@ -34,7 +34,7 @@ def get_model(input_size: int, n_classes: int, phase: str,pretrained: bool = Tru
         if not os.path.exists(weights_dir):
             os.mkdir(weights_dir)
 
-        vgg_weights_path = os.path.join(weights_dir, "vgg16_reducedfc.pth") 
+        vgg_weights_path = os.path.join(weights_dir, "vgg16_reducedfc.pth")
 
         if not os.path.exists(vgg_weights_path):
             print("start downloading weights of vgg")
