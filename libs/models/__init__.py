@@ -4,7 +4,7 @@ import urllib
 import torch
 import torch.nn as nn
 
-from .SSD import SSD
+from .ssd import SSD
 
 __all__ = ["get_model"]
 
